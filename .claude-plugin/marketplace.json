@@ -4,6 +4,6 @@
   "plugins": [{
     "name": "talking-head-skills",
     "source": "./",
-    "description": "Turn photos, a voice and a script into talking-head footage, narration and motion graphics."
+    "description": "Turn your photos and voice or a self-recorded video into AI talking-head footage with a new script and motion graphics."
   }]
 }

@@ -1,7 +1,7 @@
 {
   "name": "talking-head-skills",
-  "version": "0.1.0",
-  "description": "Make a talking-head film from photos, a voice and a script, using fal H3, ElevenLabs and editable motion graphics.",
+  "version": "0.1.1",
+  "description": "Make an AI talking-head film from your photos and voice or a self-recorded video, using fal H3, ElevenLabs and editable motion graphics.",
   "author": { "name": "iart.ai", "url": "https://iart.ai" },
   "repository": "https://github.com/iart-ai/talking-head-skills",
   "license": "MIT",

@@ -1,6 +1,6 @@
 ---
 name: talking-head
-description: Create a talking-head film from a person's photos, an authorized voice sample or existing ElevenLabs voice, and a script. Generates speaking shots with fal MiniMax H3, narration with ElevenLabs, and editable motion graphics, then renders an MP4. Use for AI presenter videos, personal explainers and scripted on-camera clips. For an existing recording that only needs graphics, use a recording-editing workflow instead.
+description: Create an AI talking head from the user's own photos plus a voice sample, or from a self-recorded video by extracting face frames and speech. Use an authorized cloned or existing ElevenLabs voice and a new script to generate speaking shots with fal MiniMax H3, narration and editable motion graphics, then render an MP4. Use for AI avatars, presenter videos, personal explainers and scripted on-camera clips. For a recording that only needs graphics without generating new speech, use a recording-editing workflow instead.
 ---
 
 # Talking-head films
@@ -18,6 +18,9 @@ Requires Node 22+, ffmpeg/ffprobe, `FAL_KEY` and `ELEVENLABS_API_KEY`. Read [the
 
 ## Inputs and plan
 
+- Offer two input paths: **photos + voice** (one or more photos of the user and a clean voice recording/existing voice ID), or **self-recorded video** (one clip provides both the user's appearance and voice). A video used as identity input is different from a recording the user wants edited unchanged; do not route the former to b-roll editing.
+- For a new recording, have the user save a short phone/webcam video, ideally 30–60 seconds of one person speaking naturally, with a clear face, open eyes, steady lighting and no background music or other speakers. A shorter existing recording can be used, with potentially weaker voice-clone quality. The skill accepts the saved video file; it does not include a camera recorder UI.
+- For video input, run `prepare-person --video inputs/me.mov --out inputs/person`. This is local and needs no API keys. Inspect `frames.jpg` and the full-size candidate portraits, pick the clearest frame first, and listen to `voice.wav` when playback is available. The script samples timestamps, not facial quality; discard blinking, blurred or obstructed frames. Use `--frame-times` or an audio interval if better material exists elsewhere. Read [the workflow reference](references/workflow.md#self-recorded-video) for exact commands and file paths.
 - Use supplied photos, voice and text. Ask only for missing identity assets or authorization to use someone else's voice. A supplied existing voice ID avoids creating another clone. If the user has already authorized the voice, use that authorization; do not ask again.
 - The first image determines the clothing and setting. Additional photos help preserve identity. Do not change someone's face or invent a studio portrait unless requested.
 - For a topic rather than a script, write the script first. On-camera lines are typically the hook, a personal observation and the close. Explain steps, evidence and comparisons with motion. Usually one to three short on-camera lines suffice; a full performance costs more generated video.
