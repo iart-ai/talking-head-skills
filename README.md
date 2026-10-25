@@ -1,6 +1,6 @@
 # Talking Head Skills
 
-**Make a video with your face, your voice and your words.** A skill for AI coding agents that turns photos and a script into speaking shots, narration and editable motion graphics.
+**Make a video with your face, your voice and your words.** Give your agent your own photos and a voice recording, or a video of yourself speaking. It uses your appearance and voice to make AI talking-head shots from a new script, with narration and editable motion graphics.
 
 Bring your own **fal** and **ElevenLabs** API keys. ElevenLabs clones the voice and speaks the script; MiniMax H3 uses the photos and speech to generate the on-camera performance. The rest of the film can be drawn as motion graphics and rendered locally.
 
@@ -27,6 +27,10 @@ Then ask your agent:
 
 > Use portrait.jpg and my voice recording to make a short introduction. Open with me speaking, explain the steps with motion graphics, then bring me back for the close. Use fal H3 and ElevenLabs; keep it under 20 seconds of generated on-camera footage.
 
+Or start with a video you record yourself:
+
+> Here's me.mov, a video of me talking to camera. Extract clear photos and my voice, then make an AI version of me delivering this new script. Add motion graphics to explain the steps.
+
 Already have a cloned voice? Give the agent its ElevenLabs voice ID. No need to clone it again. Use your own likeness and voice or material you have permission to use.
 
 ## What you need
@@ -43,6 +47,8 @@ Already have a cloned voice? Give the agent its ElevenLabs voice ID. No need to 
 `FAL_API_KEY` is also accepted as an alias for `FAL_KEY`.
 
 The skill installs `@fal-ai/client` and `@napi-rs/canvas` in its own directory. No iArt account, database, Vercel deployment or GPU is needed. fal and ElevenLabs bill your accounts; the MIT license covers this repository's code, not free model inference.
+
+**A single self-recorded video can supply both the photos and voice recording.** Record yourself with your phone or webcam, ideally 30–60 seconds with one speaker, a clearly visible face and clean speech. Save the file and give it to your agent. Camera capture itself uses your usual camera app; this package provides local extraction and the generation workflow.
 
 ## How it works
 
@@ -64,14 +70,25 @@ cp .env.example .env
 # Set your two keys in .env. Keep it private.
 ```
 
-Put your photos and recording in the ignored `inputs/` folder. These commands use Node's built-in `.env` support:
+Put your photos and recording in the ignored `inputs/` folder. Commands that call providers use Node's built-in `.env` support.
+
+If starting from a self-recorded video, first extract its identity assets locally:
+
+```bash
+node skills/talking-head/scripts/talking-head.mjs prepare-person \
+  --video inputs/me.mov --out inputs/person
+```
+
+Inspect `inputs/person/frames.jpg` and the full-size portraits; choose a sharp face with open eyes. Listen to `inputs/person/voice.wav` for clean speech. The script samples frames and extracts audio; it does not automatically judge face quality or voice-clone suitability. It needs no API keys and leaves the recording unchanged. See [video input options](skills/talking-head/references/workflow.md#self-recorded-video) for selecting timestamps, audio intervals and SDR input.
+
+Then clone the voice (for video input, use `inputs/person/voice.wav` as the sample):
 
 ```bash
 node --env-file=.env skills/talking-head/scripts/talking-head.mjs clone-voice \
   --name 'My voice' --sample inputs/voice.wav --out voice.json --consent
 ```
 
-Copy `examples/quick-intro/plan.json` to `plan.json`. Set `voice_id` from the result and change the image path to `inputs/portrait.jpg`. Customize the script and headings. If ElevenLabs requests verification, complete it before continuing.
+Copy `examples/quick-intro/plan.json` to `plan.json`. Set `voice_id` from the result and change the image path to your photo, such as `inputs/portrait.jpg`, or a selected video frame, such as `inputs/person/portrait-02.jpg`. Customize the script and headings. If ElevenLabs requests verification, complete it before continuing.
 
 ```bash
 # Local validation only: no uploads or paid API calls.

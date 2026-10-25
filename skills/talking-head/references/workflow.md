@@ -1,5 +1,36 @@
 # Local workflow
 
+## Choose the identity input
+
+- **Your photos + your voice:** use 1–9 clear photos and a clean voice recording, or reuse an existing authorized ElevenLabs voice ID. Continue with Voice below.
+- **Your self-recorded video:** record yourself speaking with a phone or webcam, or use an existing personal recording. Extract candidate photos and voice locally as follows, then use those to generate yourself saying a **new script**. The original recording's words do not become the new script unless requested.
+
+## Self-recorded video
+
+Save a video such as `inputs/me.mov` or `inputs/me.mp4`. Aim for 30–60 seconds of one speaker, a well-lit unobstructed face, open eyes, a steady camera and clean speech without music. The package has no built-in camera capture interface; use your phone or system camera app and give the saved file to the agent.
+
+```bash
+# Entirely local; no keys, uploads, cloning or model charges.
+node <skill>/scripts/talking-head.mjs prepare-person \
+  --video inputs/me.mov --out inputs/person
+```
+
+This writes three candidate portraits, `frames.jpg` (a contact sheet), `voice.wav` (mono 44.1 kHz), and `person.json` (timestamps and relative output paths). By default the audio is the first 60 seconds, or the whole clip if shorter; candidates come from 10%, 50% and 90% of that interval. Frames are candidates, not automatically verified face photos. Inspect them before use and keep the best one first. The original file is unchanged, and an existing output directory is refused.
+
+For a better speech interval or known good face frames, all times below are seconds from the original recording's start:
+
+```bash
+node <skill>/scripts/talking-head.mjs prepare-person \
+  --video inputs/me.mov --out inputs/person-selected \
+  --frame-times 3,12,24 --audio-start 2 --audio-duration 30
+```
+
+The selected interval and timestamps must fit the clip. Video without an audio track is rejected: record speech or use photos with a separate voice sample. An audio track can still contain silence or noise, so listen before cloning. HDR phone recordings must first be exported as SDR so extracted photos have correct colors. If extraction fails, inspect the error and choose a fresh output folder; do not overwrite the original or treat a partial folder as ready.
+
+After reviewing the candidates and speech, clone with `--sample inputs/person/voice.wav` (command below). Put the returned voice ID into the plan and use, for example, `"images": ["inputs/person/portrait-02.jpg", "inputs/person/portrait-01.jpg"]` if frame 02 is the clearest. These paths assume `plan.json` is in the project root; image paths are relative to the plan file. `person.json` is a preparation report, not a generation plan.
+
+Then run the existing `generate` and `render` commands. ElevenLabs speaks the **new script** using the cloned voice, and H3 receives the chosen face frames plus that synthesized speech. The H3 reference-audio limit applies to each newly synthesized line, not to the length of the source recording used for cloning.
+
 ## Voice
 
 Use a clean recording of yourself, or a speaker who has authorized the clone. A clean 30–60 second sample is a useful starting point; quality matters more than padding it out. A short sample may work less reliably. Cloning needs a suitable ElevenLabs plan.
@@ -8,6 +39,8 @@ Use a clean recording of yourself, or a speaker who has authorized the clone. A 
 node <skill>/scripts/talking-head.mjs clone-voice \
   --name 'My voice' --sample inputs/voice.wav --out voice.json --consent
 ```
+
+For the self-recorded-video path, replace `inputs/voice.wav` with `inputs/person/voice.wav`.
 
 `voice.json` contains the voice ID and whether provider verification is required. Complete verification in ElevenLabs when requested. Reusing this command with the same sample and output returns the saved voice; it does not create another clone. An existing authorized `voice_id` can be put straight into the plan instead.
 
