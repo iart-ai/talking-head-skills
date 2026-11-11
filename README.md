@@ -140,7 +140,7 @@ Have an existing recording and want graphics added to it? Use [b-roll-skills](ht
 
 Collection: [Motion Skills](https://github.com/iart-ai/motion-skills).
 
-Built by [iart.ai](https://iart.ai/?utm_source=github&utm_medium=readme&utm_campaign=talking-head-skills&utm_content=footer).
+Built by [iart.ai](https://www.iart.ai/?utm_source=github&utm_medium=readme&utm_campaign=talking-head-skills&utm_content=footer).
 
 ## License
 
